@@ -12,14 +12,14 @@ import javax.persistence.Query;
 
 import model.Person;
 import model.Photo;
-import model.Photographer;
 import model.Specialty;
 
-public class Client {
+public class Photographer {
 
 	private EntityManager em;
-
-	public Client() {
+    private static final String SPECIALITY="portrait";
+    
+	public Photographer() {
 
 		EntityManagerFactory emf = Persistence
 				.createEntityManagerFactory("test-jpa");
@@ -34,26 +34,22 @@ public class Client {
 		}
 	}
 
-	public Collection<Photographer> listAllPhotographerShot(String particular) {
-
+	public Collection<model.Photographer> listAllPhotographerShotPerson(String particular) {
+		
+        String jsql="SELECT p FROM Person p where p.name=:name";
 		Query query = em
-				.createQuery("SELECT p FROM Person p where p.name=:name");
+				.createQuery(jsql);
 		query.setParameter("name", particular);
-
-		System.out.println("size:" + query.getResultList().size());
 		// get person named Mona Lisa
-		HashMap<Integer, Photographer> map = new HashMap<Integer, Photographer>();
-
+		HashMap<Integer, model.Photographer> map = new HashMap<Integer, model.Photographer>();
 		for (Object obj : query.getResultList()) {
 			Person p = (Person) obj;
-			// System.out.println("Name:"+p.getName());
-			// System.out.println("size:"+p.getPhotos().size());
 			for (Photo photo : p.getPhotos()) {
-				Photographer pher = photo.getPhotographer();
+				model.Photographer pher = photo.getPhotographer();
+				//get ID
 				int id = pher.getId();
-				// System.out.println("id:"+id);
-				System.out.println(isContain(pher.getSpecialties(), "portrait"));
-				if (!map.containsKey(id)&&isContain(pher.getSpecialties(), "portrait")) {
+				//System.out.println(isContain(pher.getSpecialties(), SPECIALITY));
+				if (!map.containsKey(id)&&isContain(pher.getSpecialties(), SPECIALITY)) {
 					map.put(id, pher);
 				}
 			}
@@ -99,13 +95,14 @@ public class Client {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Client c = new Client();
-		Collection<Photographer> phers = c.listAllPhotographerShot("Mona Lisa");
-		Iterator<Photographer> iterator = phers.iterator();
+		program.Photographer c = new program.Photographer();
+		System.out.println("Q1:");
+		Collection<model.Photographer> phers = c.listAllPhotographerShotPerson("Mona Lisa");
+		Iterator<model.Photographer> iterator = phers.iterator();
 		while (iterator.hasNext()) {
 			System.out.println(iterator.next().getPerson().getName());
 		}
-		System.out.println("@@@@@@@@@@");
+		System.out.println("Q2:");
 		Collection<Person> persons=c.listAllPersonShotByLoc("Boston");
         Iterator<Person> iterator2=persons.iterator();
         while(iterator2.hasNext()){
